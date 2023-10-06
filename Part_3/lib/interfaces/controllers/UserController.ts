@@ -7,6 +7,7 @@ import UpdateUser from '../../application/use_cases/user/UpdateUser';
 import DeleteUser from '../../application/use_cases/user/DeleteUser';
 import { ServiceLocator } from '../../infrastructure/config/service-locator';
 import User from '../../domain/entities/User';
+import deletePostsByUser from '../../application/use_cases/blog/deletePostsByUser';
 
 export default {
 
@@ -52,6 +53,7 @@ export default {
 
     // Input
     let data = request.body;
+
     data = {
       firstName: data.first_name,
       lastName: data.last_name,
@@ -66,20 +68,24 @@ export default {
     let error = null;
     try {
       user = await CreateUser(data, serviceLocator);
+      
     } catch (err: unknown) {
       if (err instanceof ValidationError) {
         error = err.details[0].message;
       } else if (err instanceof Error) {
         // 'Error occurred while creating user'
         error = err.message;
+
       }
     }
 
     // Output
     if (!user) {
+
       return response.status(400).json({ message: error });
     }
     const output = serviceLocator.userSerializer.serialize(user, serviceLocator);
+    // console.log(output)
     return response.status(201).json(output);
   },
 
@@ -152,6 +158,8 @@ export default {
     // Treatment
     let user = null;
     try {
+  await deletePostsByUser(toDeleteUserId!,serviceLocator)
+
       user = await DeleteUser(toDeleteUserId, serviceLocator);
     } catch (err: unknown) {
       if (err instanceof Error) {

@@ -29,4 +29,4 @@ export default Joi.object({
     .min(10)
     .regex(/^\d+$/)
     .optional(),
-}).unknown();
+}).options({ abortEarly: false }).unknown();

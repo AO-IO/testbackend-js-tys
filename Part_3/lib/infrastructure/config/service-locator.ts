@@ -19,20 +19,30 @@ import UserSerializer from '../../interfaces/serializers/UserSerializer';
 // Mongo
 import UserRepositoryMongo from '../repositories/mongoose/UserRepositoryMongo';
 
+// post repo 
+
+import postRepo from '../../domain/repositories/PostRepo'
+import PostSerializer from '../../interfaces/serializers/PostSerializer';
+import PostRepoMongo from '../repositories/mongoose/PostRepoMongo';
+import PostUserRepoMongo from '../repositories/mongoose/Post_UserRepoMongo';
+import PostUserRepo from '../../domain/repositories/PostUserRepo'
 export type ServiceLocator = {
   passwordManager: PasswordManager,
   accessTokenManager: AccessTokenManager,
-
+  PostRepo : postRepo,
   userSerializer: Serializer,
-
+  PostSerializer: Serializer,
   userRepository?: UserRepository,
+  PostUserRepo: PostUserRepo
 };
 
 function buildBeans() {
   const beans: ServiceLocator = {
     passwordManager: new BcryptPasswordManager(),
     accessTokenManager: new JwtAccessTokenManager(),
-
+    PostSerializer: new PostSerializer(),
+    PostRepo : new PostRepoMongo(),
+    PostUserRepo: new PostUserRepoMongo(),
     userSerializer: new UserSerializer(),
   };
 

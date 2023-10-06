@@ -12,6 +12,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(BlogRoutes)
 app.use(Imagesoutes)
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+// });
+
+app.get('/', (req,res,next) => {
+    res.send('Hello, Express!')
+  });
+
+module.exports = app;

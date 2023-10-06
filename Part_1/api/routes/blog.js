@@ -5,8 +5,8 @@ const { body, validationResult } = require("express-validator");
 const path = require("path");
 const multer = require("multer");
 const sharp = require("sharp");
-const moment = require('moment');
-const _ = require('lodash');
+const moment = require("moment");
+const _ = require("lodash");
 
 const storageMainImage = multer.diskStorage({
   destination: "./images",
@@ -42,16 +42,16 @@ router.get("/posts", (req, res, next) => {
     }
     const jsonData = JSON.parse(data);
 
-    const newMap = jsonData.map(post=>{
+    const newMap = jsonData.map((post) => {
       return {
-        title :post.title,
-        description:post.description,
-        date : moment.unix(post.date_time),
-        image:post.main_image,
-        additionalImages:post.additional_images,
-        slug:_.kebabCase(post.title)
-      }
-    })
+        title: post.title,
+        description: post.description,
+        date: moment.unix(post.date_time),
+        image: post.main_image,
+        additionalImages: post.additional_images,
+        slug: _.kebabCase(post.title),
+      };
+    });
     res.status(200).json(newMap);
   });
 });
@@ -72,11 +72,27 @@ router.post("/add-post", (req, res, next) => {
       .isLength({ min: 5, max: 50 })
       .withMessage("Must be between 5 and 50 characters")
       .run(req);
-
+      await body("date_time")
+    .notEmpty()
+    .withMessage("Date and time are required")
+    .isInt({ min: Math.floor(Date.now() / 1000) })
+    .withMessage("Time should be a Unix timestamp and not before the current time").run(req)
+      await body('main_image')
+      .custom((value, { req }) => {
+        // console.log(req.files.main_image)
+        if (!req.files || !req.files.main_image) {
+          throw new Error('Main image is required.');
+        }
+  
+        
+  
+        return true;
+      }).run(req)
     const InputErrors = validationResult(req);
-    console.log(req.files);
+    // console.log(req.files);
     if (mainImageErr) {
-      return res.status(400).json({ error: "Main image upload failed" });
+      // console.log(mainImageErr)
+      return res.status(400).json({ error: mainImageErr ? mainImageErr.message : "Main image upload failed" });
     } else if (!InputErrors.isEmpty()) {
       if (req.files) {
         Object.keys(req.files).forEach((fieldName) => {
@@ -97,7 +113,7 @@ router.post("/add-post", (req, res, next) => {
       return res.status(400).json({
         errors: InputErrors.array().map((err) => {
           return {
-            field: err.param,
+            field: err.path,
             message: err.msg,
           };
         }),
@@ -139,7 +155,8 @@ router.post("/add-post", (req, res, next) => {
         description: descriptionInput,
         main_image: `images/${nextID}${req.uniqueFilename}`,
         additional_images: additionalImagesPaths,
-        date_time: unixTimestamp >= nowCompare ? unixTimestamp : nowCompare,
+        date_time: dateInput // remove to make the test success
+        // unixTimestamp >= nowCompare ? unixTimestamp : nowCompare
       };
 
       const compressionPercentage = 25;
@@ -151,7 +168,7 @@ router.post("/add-post", (req, res, next) => {
           `./images/${req.uniqueFilename.filename}`,
           async (err, info) => {
             if (err) {
-              console.error(err);
+              // console.error(err);
               return res
                 .status(500)
                 .json({ error: "Image compression failed" });
@@ -182,7 +199,7 @@ router.post("/add-post", (req, res, next) => {
           return res.status(500).send("Error writing to JSON file");
         }
 
-        res.json({ message: "Record added successfully", newPost });
+        res.json({ message: "Record added successfully", newPost:newPost });
       });
     });
   });

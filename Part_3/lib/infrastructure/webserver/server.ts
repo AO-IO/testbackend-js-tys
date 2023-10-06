@@ -2,13 +2,15 @@ import express from 'express';
 import environment from '../config/environment';
 import serviceLocator from '../config/service-locator';
 import routesV1 from './routes-v1';
-
+import bodyParser from 'body-parser';
 const app = express();
 const router = express.Router();
 
 const createServer = async () => {
+  
   express.request.serviceLocator = serviceLocator;
-
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json({ limit: '50mb' }));
   router.use('/api/v1', routesV1);
   app.use(router);
@@ -20,5 +22,4 @@ const createServer = async () => {
 
   return app;
 };
-
 export default createServer;
