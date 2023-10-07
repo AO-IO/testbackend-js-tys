@@ -2,7 +2,7 @@
 const request = require('supertest');
 const app = require('../api/index');
 
-
+//date_time should set in blog.js req.body.date_time so the test can be successful
 describe("POST /add-post", () => {
   it("date time should be unix", async () => {
     const now = new Date();

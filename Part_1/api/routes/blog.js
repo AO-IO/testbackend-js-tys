@@ -155,8 +155,9 @@ router.post("/add-post", (req, res, next) => {
         description: descriptionInput,
         main_image: `images/${nextID}${req.uniqueFilename}`,
         additional_images: additionalImagesPaths,
-        date_time: dateInput // remove to make the test success
-        // unixTimestamp >= nowCompare ? unixTimestamp : nowCompare
+        date_time:  unixTimestamp >= nowCompare ? unixTimestamp : nowCompare 
+        
+       
       };
 
       const compressionPercentage = 25;

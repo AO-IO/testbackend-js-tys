@@ -3,7 +3,6 @@ const app = require('../api/index');
 
 describe("POST /add-post GET /posts", () => {
   it("should add a post, retrieve all posts, and check if the post is present", async () => {
-    // Step 1: Add a Post
     const requestBody = {
       title: "Test Blog Post",
       description: "This is a test blog post.",
